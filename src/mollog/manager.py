@@ -3,9 +3,11 @@ from __future__ import annotations
 import sys
 import threading
 from collections.abc import Iterable
+from pathlib import Path
 from typing import IO
 
 from mollog.context import clear_context
+from mollog.file_handler import FileHandler
 from mollog.formatter import Formatter, TextFormatter
 from mollog.handler import Handler, StreamHandler
 from mollog.level import Level
@@ -74,10 +76,35 @@ class LoggerManager:
         formatter: Formatter | None = None,
         replace: bool = True,
         stream: IO[str] | None = None,
+        filename: str | Path | None = None,
+        filemode: str = "a",
+        file_level: Level | str | int | None = None,
+        file_formatter: Formatter | None = None,
+        encoding: str = "utf-8",
     ) -> Logger:
-        """Configure the root logger for library or application use."""
+        """Configure the root logger for library or application use.
+
+        Parameters mirror :func:`logging.basicConfig` where sensible. The
+        important dual-destination case — ``stream + filename`` — attaches
+        *both* a :class:`StreamHandler` and a :class:`FileHandler` to the
+        root logger so records show up on the terminal **and** in the file.
+
+        Precedence rules:
+
+        * If *handlers* is given, it fully overrides *stream* / *filename*:
+          the caller is taking manual control of the handler list. A
+          shared *formatter* (if given) is still applied to each handler.
+        * Otherwise a :class:`StreamHandler` is always added (on *stream*
+          or ``sys.stderr``). If *filename* is also provided, a
+          :class:`FileHandler` is added alongside it.
+        * *file_level* / *file_formatter* let the file sink diverge from
+          the console (e.g. DEBUG to file, INFO to terminal).
+        """
 
         resolved_level = Level.coerce(level)
+        resolved_file_level = (
+            Level.coerce(file_level) if file_level is not None else resolved_level
+        )
         with self._state_lock:
             root = self._root
             root.level = resolved_level
@@ -85,21 +112,32 @@ class LoggerManager:
             if replace:
                 root.clear_handlers(close=True)
 
-            normalized_handlers = list(handlers or [])
-            if not normalized_handlers:
-                if replace or not root.handlers:
-                    default_handler = StreamHandler(
-                        stream=stream or sys.stderr,
-                        level=resolved_level,
-                    )
-                    default_handler.set_formatter(formatter or TextFormatter())
-                    normalized_handlers.append(default_handler)
-            elif formatter is not None:
-                for handler in normalized_handlers:
-                    handler.set_formatter(formatter)
+            provided = list(handlers or [])
+            if provided:
+                if formatter is not None:
+                    for handler in provided:
+                        handler.set_formatter(formatter)
+                for handler in provided:
+                    root.add_handler(handler)
+            elif replace or not root.handlers:
+                shared_formatter = formatter or TextFormatter()
 
-            for handler in normalized_handlers:
-                root.add_handler(handler)
+                stream_handler = StreamHandler(
+                    stream=stream or sys.stderr,
+                    level=resolved_level,
+                )
+                stream_handler.set_formatter(shared_formatter)
+                root.add_handler(stream_handler)
+
+                if filename is not None:
+                    file_handler = FileHandler(
+                        Path(filename),
+                        mode=filemode,
+                        encoding=encoding,
+                        level=resolved_file_level,
+                    )
+                    file_handler.set_formatter(file_formatter or shared_formatter)
+                    root.add_handler(file_handler)
 
             self._configured = True
             return root
@@ -148,8 +186,18 @@ def configure(
     formatter: Formatter | None = None,
     replace: bool = True,
     stream: IO[str] | None = None,
+    filename: str | Path | None = None,
+    filemode: str = "a",
+    file_level: Level | str | int | None = None,
+    file_formatter: Formatter | None = None,
+    encoding: str = "utf-8",
 ) -> Logger:
-    """Configure and return the root logger."""
+    """Configure and return the root logger.
+
+    See :meth:`LoggerManager.configure` for the full parameter reference.
+    The short version: pass *filename* to also mirror records into a file
+    alongside the terminal stream.
+    """
 
     return LoggerManager().configure(
         level=level,
@@ -157,6 +205,11 @@ def configure(
         formatter=formatter,
         replace=replace,
         stream=stream,
+        filename=filename,
+        filemode=filemode,
+        file_level=file_level,
+        file_formatter=file_formatter,
+        encoding=encoding,
     )
 
 

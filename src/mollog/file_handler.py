@@ -7,13 +7,22 @@ from mollog.record import LogRecord
 
 
 class FileHandler(Handler):
-    """Append log records to a file."""
+    """Append (or overwrite) log records in a file."""
 
-    def __init__(self, path: str | Path, level: Level = Level.TRACE) -> None:
+    def __init__(
+        self,
+        path: str | Path,
+        *,
+        mode: str = "a",
+        encoding: str = "utf-8",
+        level: Level = Level.TRACE,
+    ) -> None:
         super().__init__(level)
+        if mode not in ("a", "w"):
+            raise ValueError(f"FileHandler mode must be 'a' or 'w', got {mode!r}")
         self._path = Path(path)
         self._path.parent.mkdir(parents=True, exist_ok=True)
-        self._file = open(self._path, "a", encoding="utf-8")  # noqa: SIM115
+        self._file = open(self._path, mode, encoding=encoding)  # noqa: SIM115
 
     def emit(self, record: LogRecord) -> None:
         line = self._formatter.format(record)
