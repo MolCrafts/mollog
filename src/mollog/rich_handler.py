@@ -1,19 +1,18 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import Any
+
+from rich.console import Console
+from rich.highlighter import ReprHighlighter
+from rich.text import Text
 
 from mollog.handler import Handler
 from mollog.level import Level
 from mollog.record import LogRecord
 
-if TYPE_CHECKING:
-    from rich.console import Console
-    from rich.highlighter import Highlighter
-    from rich.text import Text
-
 
 class RichHandler(Handler):
-    """Pretty console handler backed by the optional ``rich`` package."""
+    """Pretty console handler backed by ``rich``."""
 
     _LEVEL_STYLES: dict[Level, str] = {
         Level.TRACE: "dim",
@@ -33,21 +32,18 @@ class RichHandler(Handler):
         show_logger_name: bool = True,
         show_extra: bool = True,
         markup: bool = False,
-        highlighter: Highlighter | None = None,
+        highlighter: ReprHighlighter | None = None,
         time_format: str = "%H:%M:%S",
     ) -> None:
         super().__init__(level)
-        console_cls, repr_highlighter_cls, text_cls = _load_rich()
-
-        self._console = console or console_cls(stderr=True)
+        self._console = console or Console(stderr=True)
         self._show_time = show_time
         self._show_logger_name = show_logger_name
         self._show_extra = show_extra
         self._markup = markup
         self._time_format = time_format
         self._formatter_overridden = False
-        self._text_cls = text_cls
-        self._highlighter = highlighter or repr_highlighter_cls()
+        self._highlighter = highlighter or ReprHighlighter()
 
     def set_formatter(self, formatter: Any) -> None:
         super().set_formatter(formatter)
@@ -86,17 +82,4 @@ class RichHandler(Handler):
             segments.append(" ")
             segments.append(self._highlighter(repr(record.extra)))
 
-        return self._text_cls.assemble(*segments)
-
-
-def _load_rich() -> tuple[type[Console], type[Highlighter], type[Text]]:
-    try:
-        from rich.console import Console
-        from rich.highlighter import ReprHighlighter
-        from rich.text import Text
-    except ImportError as exc:
-        raise ImportError(
-            "RichHandler requires the optional 'rich' dependency. Install mollog[rich]."
-        ) from exc
-
-    return Console, ReprHighlighter, Text
+        return Text.assemble(*segments)
