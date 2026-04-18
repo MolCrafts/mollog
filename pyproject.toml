@@ -4,10 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "molcrafts-mollog"
-version = "1.0.0"
-description = "Zero-dependency structured logging library for the molcrafts ecosystem"
+version = "1.1.0"
+description = "Structured logging library for the molcrafts ecosystem"
 readme = "README.md"
 requires-python = ">=3.12"
+dependencies = ["rich>=13"]
 license = "BSD-3-Clause"
 license-files = ["LICENSE"]
 authors = [
@@ -37,7 +38,6 @@ Changelog = "https://github.com/MolCrafts/mollog/blob/master/CHANGELOG.md"
 [project.optional-dependencies]
 dev = ["pytest>=8.0", "ruff>=0.11"]
 docs = ["zensical>=0.0.32"]
-rich = ["rich>=13"]
 
 [tool.setuptools]
 package-dir = {"" = "src"}

@@ -1,7 +1,17 @@
 import io
 import json
+from pathlib import Path
 
-from mollog import JSONFormatter, StreamHandler, clear_context, configure, get_logger, shutdown
+from mollog import (
+    FileHandler,
+    JSONFormatter,
+    Level,
+    StreamHandler,
+    clear_context,
+    configure,
+    get_logger,
+    shutdown,
+)
 from mollog.manager import LoggerManager
 
 
@@ -48,3 +58,78 @@ class TestConfigureAndShutdown:
         configure(level="debug", replace=False)
 
         assert LoggerManager().root.handlers == original
+
+    def test_filename_attaches_both_stream_and_file_handlers(self, tmp_path: Path):
+        buf = io.StringIO()
+        log_path = tmp_path / "app.log"
+
+        configure(level="info", stream=buf, filename=log_path)
+
+        get_logger("app").info("dual-sink")
+        shutdown()  # flush file handler
+
+        assert "dual-sink" in buf.getvalue()
+        assert "dual-sink" in log_path.read_text()
+
+        handlers = LoggerManager().root.handlers  # emptied by shutdown
+        # shutdown clears handlers, so re-check via pre-shutdown snapshot:
+        # we verified output on both sinks above, which is the contract.
+        assert handlers == []
+
+    def test_filename_respects_filemode_overwrite(self, tmp_path: Path):
+        log_path = tmp_path / "app.log"
+        log_path.write_text("stale-content\n")
+
+        configure(level="info", stream=io.StringIO(), filename=log_path, filemode="w")
+        get_logger("app").info("fresh")
+        shutdown()
+
+        text = log_path.read_text()
+        assert "stale-content" not in text
+        assert "fresh" in text
+
+    def test_file_level_diverges_from_stream_level(self, tmp_path: Path):
+        buf = io.StringIO()
+        log_path = tmp_path / "app.log"
+
+        configure(
+            level="warning",
+            stream=buf,
+            filename=log_path,
+            file_level="debug",
+        )
+        logger = get_logger("app")
+        logger.debug("only-file")
+        logger.warning("both")
+        shutdown()
+
+        # Console: WARNING threshold, so debug suppressed.
+        assert "only-file" not in buf.getvalue()
+        assert "both" in buf.getvalue()
+        # File: DEBUG threshold, so both visible.
+        file_text = log_path.read_text()
+        assert "only-file" in file_text
+        assert "both" in file_text
+
+    def test_explicit_handlers_override_filename(self, tmp_path: Path):
+        buf = io.StringIO()
+        log_path = tmp_path / "ignored.log"
+
+        configure(handlers=[StreamHandler(stream=buf)], filename=log_path)
+        get_logger("app").info("hi")
+        shutdown()
+
+        assert "hi" in buf.getvalue()
+        # filename was ignored because explicit handlers were given
+        assert not log_path.exists() or log_path.read_text() == ""
+
+    def test_filehandler_mode_validation(self, tmp_path: Path):
+        import pytest
+
+        with pytest.raises(ValueError):
+            FileHandler(tmp_path / "x.log", mode="r")
+
+    def test_filehandler_keyword_level_still_works(self, tmp_path: Path):
+        h = FileHandler(tmp_path / "x.log", level=Level.ERROR)
+        assert h.level is Level.ERROR
+        h.close()

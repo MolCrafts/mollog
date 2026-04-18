@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.0 - 2026-04-18
+
+### Added
+- `configure(filename=...)` now wires up both a StreamHandler (terminal) and a FileHandler in one call, with `filemode`, `file_level`, `file_formatter`, and `encoding` kwargs.
+
+### Changed
+- Promoted `rich` from an optional extra to a required runtime dependency; removed the `[rich]` install extra and lazy-loading scaffolding.
+
 ## 1.0.0 - 2026-04-11
 
 Initial stable release.

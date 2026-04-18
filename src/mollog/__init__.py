@@ -1,7 +1,6 @@
-"""mollog — zero-dependency structured logging for molcrafts."""
+"""mollog — structured logging for molcrafts."""
 
 from importlib.metadata import PackageNotFoundError, version
-from typing import TYPE_CHECKING
 
 from mollog.context import bind_context, clear_context, get_context, reset_context, scoped_context
 from mollog.file_handler import FileHandler, RotatingFileHandler, TimedRotatingFileHandler
@@ -13,9 +12,7 @@ from mollog.logger import BoundLogger, Logger
 from mollog.manager import LoggerManager, configure, get_logger, shutdown
 from mollog.queue import QueueHandler, QueueListener
 from mollog.record import LogRecord
-
-if TYPE_CHECKING:
-    from mollog.rich_handler import RichHandler
+from mollog.rich_handler import RichHandler
 
 try:
     __version__ = version("mollog")
@@ -52,11 +49,3 @@ __all__ = [
     "scoped_context",
     "RichHandler",
 ]
-
-
-def __getattr__(name: str) -> object:
-    if name == "RichHandler":
-        from mollog.rich_handler import RichHandler
-
-        return RichHandler
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
