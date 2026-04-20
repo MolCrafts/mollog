@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from mollog.level import Level
-from mollog.record import LogRecord
+from mollog._level import Level
+from mollog._record import LogRecord
 
 
 class Filter(ABC):

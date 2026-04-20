@@ -1,7 +1,7 @@
 import json
 from abc import ABC, abstractmethod
 
-from mollog.record import LogRecord
+from mollog._record import LogRecord
 
 _RESERVED_FIELDS = {"timestamp", "level", "logger_name", "message", "exception", "stack_info"}
 

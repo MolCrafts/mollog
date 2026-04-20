@@ -36,8 +36,9 @@ Issues = "https://github.com/MolCrafts/mollog/issues"
 Changelog = "https://github.com/MolCrafts/mollog/blob/master/CHANGELOG.md"
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0", "ruff>=0.11"]
+dev = ["pytest>=8.0", "ruff>=0.11", "logfire>=3"]
 docs = ["zensical>=0.0.32"]
+logfire = ["logfire>=3"]
 
 [tool.setuptools]
 package-dir = {"" = "src"}

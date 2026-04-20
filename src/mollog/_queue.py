@@ -5,9 +5,9 @@ import queue
 import threading
 from typing import Any
 
-from mollog.handler import Handler
-from mollog.level import Level
-from mollog.record import LogRecord
+from mollog._handler import Handler
+from mollog._level import Level
+from mollog._record import LogRecord
 
 
 class QueueHandler(Handler):

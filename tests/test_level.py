@@ -1,4 +1,4 @@
-from mollog.level import Level
+from mollog._level import Level
 
 
 def test_level_ordering():

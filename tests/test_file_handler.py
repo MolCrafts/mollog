@@ -3,9 +3,9 @@ from pathlib import Path
 
 import pytest
 
-from mollog.file_handler import FileHandler, RotatingFileHandler, TimedRotatingFileHandler
-from mollog.level import Level
-from mollog.record import LogRecord
+from mollog._file_handler import FileHandler, RotatingFileHandler, TimedRotatingFileHandler
+from mollog._level import Level
+from mollog._record import LogRecord
 
 
 def _rec(msg: str = "line") -> LogRecord:

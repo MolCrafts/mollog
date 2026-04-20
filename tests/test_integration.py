@@ -1,13 +1,13 @@
 import io
 import json
 
-from mollog.context import scoped_context
-from mollog.filter import LevelFilter
-from mollog.formatter import JSONFormatter, TextFormatter
-from mollog.handler import StreamHandler
-from mollog.level import Level
-from mollog.logger import Logger
-from mollog.manager import LoggerManager, get_logger
+from mollog._context import Context
+from mollog._filter import LevelFilter
+from mollog._formatter import JSONFormatter, TextFormatter
+from mollog._handler import StreamHandler
+from mollog._level import Level
+from mollog._logger import Logger
+from mollog._manager import LoggerManager, get_logger
 
 
 class TestIntegration:
@@ -93,14 +93,14 @@ class TestIntegration:
         assert "normal" in all_buf.getvalue()
         assert "bad" in all_buf.getvalue()
 
-    def test_scoped_context_with_bound_logger(self):
+    def test_scope_with_bound_logger(self):
         buf = io.StringIO()
         logger = Logger("app")
         handler = StreamHandler(stream=buf)
         handler.set_formatter(JSONFormatter())
         logger.add_handler(handler)
 
-        with scoped_context(request_id="req-1"):
+        with Context.scope(request_id="req-1"):
             logger.bind(component="worker").info("running")
 
         data = json.loads(buf.getvalue().strip())

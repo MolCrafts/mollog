@@ -6,12 +6,12 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import IO
 
-from mollog.context import clear_context
-from mollog.file_handler import FileHandler
-from mollog.formatter import Formatter, TextFormatter
-from mollog.handler import Handler, StreamHandler
-from mollog.level import Level
-from mollog.logger import Logger
+from mollog._context import Context
+from mollog._file_handler import FileHandler
+from mollog._formatter import Formatter, TextFormatter
+from mollog._handler import Handler, StreamHandler
+from mollog._level import Level
+from mollog._logger import Logger
 
 
 class LoggerManager:
@@ -157,7 +157,7 @@ class LoggerManager:
                     handler.close()
                     closed.add(ident)
             self._configured = False
-        clear_context()
+        Context.clear()
 
     def _reset(self) -> None:
         """Reset state (for testing only)."""

@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any
 
-from mollog.level import Level
+from mollog._level import Level
 
 
 @dataclass(frozen=True, slots=True)

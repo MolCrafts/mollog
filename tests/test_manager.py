@@ -3,22 +3,22 @@ import json
 from pathlib import Path
 
 from mollog import (
+    Context,
     FileHandler,
     JSONFormatter,
     Level,
     StreamHandler,
-    clear_context,
     configure,
     get_logger,
     shutdown,
 )
-from mollog.manager import LoggerManager
+from mollog._manager import LoggerManager
 
 
 class TestConfigureAndShutdown:
     def setup_method(self) -> None:
         LoggerManager()._reset()
-        clear_context()
+        Context.clear()
 
     def test_configure_with_string_level_and_formatter(self):
         buf = io.StringIO()

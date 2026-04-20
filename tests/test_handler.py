@@ -1,9 +1,9 @@
 import io
 
-from mollog.filter import LevelFilter
-from mollog.handler import NullHandler, StreamHandler
-from mollog.level import Level
-from mollog.record import LogRecord
+from mollog._filter import LevelFilter
+from mollog._handler import NullHandler, StreamHandler
+from mollog._level import Level
+from mollog._record import LogRecord
 
 
 def _rec(level: Level = Level.INFO) -> LogRecord:

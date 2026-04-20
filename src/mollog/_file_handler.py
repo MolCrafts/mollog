@@ -1,9 +1,9 @@
 import time
 from pathlib import Path
 
-from mollog.handler import Handler
-from mollog.level import Level
-from mollog.record import LogRecord
+from mollog._handler import Handler
+from mollog._level import Level
+from mollog._record import LogRecord
 
 
 class FileHandler(Handler):

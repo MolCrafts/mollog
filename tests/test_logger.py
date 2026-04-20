@@ -1,10 +1,10 @@
 import io
 import json
 
-from mollog.handler import StreamHandler
-from mollog.level import Level
-from mollog.logger import BoundLogger, Logger
-from mollog.manager import LoggerManager
+from mollog._handler import StreamHandler
+from mollog._level import Level
+from mollog._logger import Logger
+from mollog._manager import LoggerManager
 
 
 class TestLogger:
@@ -73,7 +73,7 @@ class TestLogger:
 
     def test_exception_shortcut(self):
         buf = io.StringIO()
-        from mollog.formatter import JSONFormatter
+        from mollog._formatter import JSONFormatter
 
         logger = Logger("app")
         handler = StreamHandler(stream=buf)
@@ -92,7 +92,7 @@ class TestLogger:
 
     def test_exc_info_and_stack_info(self):
         buf = io.StringIO()
-        from mollog.formatter import JSONFormatter
+        from mollog._formatter import JSONFormatter
 
         logger = Logger("app")
         handler = StreamHandler(stream=buf)
@@ -109,23 +109,24 @@ class TestLogger:
         assert "test_exc_info_and_stack_info" in data["stack_info"]
 
 
-class TestBoundLogger:
+class TestBind:
     def test_bind_adds_extra(self):
         buf = io.StringIO()
-        from mollog.formatter import JSONFormatter
+        from mollog._formatter import JSONFormatter
 
         logger = Logger("app")
         h = StreamHandler(stream=buf)
         h.set_formatter(JSONFormatter())
         logger.add_handler(h)
         bound = logger.bind(request_id="abc")
-        assert isinstance(bound, BoundLogger)
+        assert type(bound) is Logger
+        assert bound is not logger
         bound.info("started")
         assert '"request_id": "abc"' in buf.getvalue()
 
     def test_nested_bind(self):
         buf = io.StringIO()
-        from mollog.formatter import JSONFormatter
+        from mollog._formatter import JSONFormatter
 
         logger = Logger("app")
         h = StreamHandler(stream=buf)
@@ -140,7 +141,7 @@ class TestBoundLogger:
 
     def test_bound_logger_exception(self):
         buf = io.StringIO()
-        from mollog.formatter import JSONFormatter
+        from mollog._formatter import JSONFormatter
 
         logger = Logger("app")
         handler = StreamHandler(stream=buf)
