@@ -1,18 +1,22 @@
 # Rich Console Logging
 
-`mollog` keeps `rich` optional so the core package stays lightweight. If you want colored, more readable terminal logs for local tooling, install the extra:
-
-```bash
-pip install -e ".[rich]"
-```
+`mollog` ships with [`rich`](https://rich.readthedocs.io) as a base
+dependency, exposed as a **formatter** rather than a handler. Pair it
+with any handler that writes strings (`StreamHandler`, `FileHandler`,
+...).
 
 ## Basic usage
 
 ```python
-from mollog import Logger, RichHandler
+import sys
+
+from mollog import Logger, RichFormatter, StreamHandler
+
+handler = StreamHandler(stream=sys.stderr)
+handler.set_formatter(RichFormatter())
 
 logger = Logger("cli")
-logger.add_handler(RichHandler())
+logger.add_handler(handler)
 
 logger.info("render complete", frame=128)
 logger.warning("value outside expected range", field="charge", observed="2+")
@@ -20,45 +24,42 @@ logger.warning("value outside expected range", field="charge", observed="2+")
 
 ## Configuration
 
-`RichHandler` supports:
+`RichFormatter` supports:
 
-- custom `Console` injection
-- level filtering
-- optional timestamp rendering
-- optional logger name rendering
-- optional extra-field rendering
-- optional `markup` support
-
-Example:
-
-```python
-import io
-
-from rich.console import Console
-
-from mollog import Logger, RichHandler
-
-buffer = io.StringIO()
-console = Console(file=buffer, force_terminal=False, color_system=None)
-
-logger = Logger("tests")
-logger.add_handler(RichHandler(console=console, show_time=False))
-logger.info("captured output", case="rich-handler")
-```
-
-## Formatter interaction
-
-By default, `RichHandler` renders a structured line from the log record itself.
-
-If you call `set_formatter(...)`, the handler respects that formatter and prints the formatted string through Rich instead:
+- `show_time`, `show_logger_name`, `show_extra` toggles
+- `time_format` string (`strftime`)
+- `markup` — enable Rich's inline `[bold]...[/bold]` markup in messages
+- `highlighter` — swap the default `ReprHighlighter` used for extras
+- `color_system` — `"truecolor"`, `"256"`, `"standard"`, or `None`
+- `force_terminal` — force ANSI output even when the attached stream is
+  not a tty
 
 ```python
-from mollog import JSONFormatter, Logger, RichHandler
+from mollog import RichFormatter, StreamHandler
 
-logger = Logger("cli")
-handler = RichHandler()
-handler.set_formatter(JSONFormatter())
-logger.add_handler(handler)
+formatter = RichFormatter(
+    show_time=False,
+    color_system="256",
+    markup=True,
+)
+
+handler = StreamHandler()
+handler.set_formatter(formatter)
 ```
 
-This is useful when you still want Rich's console integration but need exact formatter output.
+## Writing colored logs to files
+
+Because Rich is a formatter, the same instance works with `FileHandler`
+too — the file will contain ANSI escape codes, which tools like
+`less -R` and most modern terminals can render:
+
+```python
+from mollog import FileHandler, RichFormatter
+
+handler = FileHandler("/var/log/myapp.log")
+handler.set_formatter(RichFormatter(color_system="256"))
+```
+
+To log to a file *without* ANSI codes (most production setups), just use
+`TextFormatter` or `JSONFormatter` on the file handler and keep
+`RichFormatter` on the stream handler.

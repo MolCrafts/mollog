@@ -13,7 +13,7 @@ from mollog._logger import Logger
 from mollog._manager import LoggerManager, configure, get_logger, shutdown
 from mollog._queue import QueueHandler, QueueListener
 from mollog._record import LogRecord
-from mollog._rich import RichHandler
+from mollog._rich import RichFormatter
 
 if TYPE_CHECKING:  # pragma: no cover
     from mollog._logfire import configure_logfire
@@ -52,7 +52,7 @@ __all__ = [
     "QueueListener",
     "Logger",
     "LoggerManager",
-    "RichHandler",
+    "RichFormatter",
     "configure",
     "configure_logfire",
     "get_logger",
