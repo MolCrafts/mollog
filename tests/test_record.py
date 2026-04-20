@@ -2,8 +2,8 @@ from datetime import datetime, timezone
 
 import pytest
 
-from mollog.level import Level
-from mollog.record import LogRecord
+from mollog._level import Level
+from mollog._record import LogRecord
 
 
 def test_record_creation():

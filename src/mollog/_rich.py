@@ -6,9 +6,9 @@ from rich.console import Console
 from rich.highlighter import ReprHighlighter
 from rich.text import Text
 
-from mollog.handler import Handler
-from mollog.level import Level
-from mollog.record import LogRecord
+from mollog._handler import Handler
+from mollog._level import Level
+from mollog._record import LogRecord
 
 
 class RichHandler(Handler):

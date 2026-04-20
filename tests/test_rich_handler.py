@@ -9,9 +9,9 @@ rich = pytest.importorskip("rich")
 from rich.console import Console
 
 from mollog import RichHandler
-from mollog.formatter import JSONFormatter
-from mollog.level import Level
-from mollog.record import LogRecord
+from mollog._formatter import JSONFormatter
+from mollog._level import Level
+from mollog._record import LogRecord
 
 
 def _rec(

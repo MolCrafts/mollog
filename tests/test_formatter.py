@@ -1,9 +1,9 @@
 import json
 from datetime import datetime, timezone
 
-from mollog.formatter import JSONFormatter, TextFormatter
-from mollog.level import Level
-from mollog.record import LogRecord
+from mollog._formatter import JSONFormatter, TextFormatter
+from mollog._level import Level
+from mollog._record import LogRecord
 
 
 def _make_record(**kw) -> LogRecord:

@@ -45,23 +45,26 @@ Methods:
 - `error(message, **extra)`
 - `critical(message, **extra)`
 - `exception(message, **extra)`
-- `bind(**extra)`
+- `fire(message, *, level=Level.INFO, **extra)` — forward to logfire (requires `configure_logfire`)
+- `bind(**extra)` — returns a `Logger` view carrying additional persistent fields
 - `clear_handlers(close=False)`
 - `close()`
 
 Each level method also accepts optional `exc_info=` and `stack_info=` keyword arguments.
 
-### `BoundLogger`
-
-Wrapper that merges pre-bound context into every emitted record.
-
 ## Context helpers
 
-- `bind_context(**extra)`
-- `reset_context(token)`
-- `clear_context()`
-- `get_context()`
-- `scoped_context(**extra)`
+All context operations live on the `Context` namespace class:
+
+- `Context.bind(**extra) -> Token`
+- `Context.reset(token) -> None`
+- `Context.clear() -> None`
+- `Context.get() -> dict`
+- `Context.scope(name=None, **extra)` — context manager; also opens a logfire span when `name` is given and logfire is configured
+
+## Logfire integration
+
+- `configure_logfire(*, token=None, service_name=None, send_to_logfire=True, **logfire_kwargs)` — configure the optional logfire backend. Requires `pip install "molcrafts-mollog[logfire]"`. Reads no environment variables; pass all configuration explicitly.
 
 ## Handlers
 

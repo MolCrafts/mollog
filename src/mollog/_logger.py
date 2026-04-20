@@ -6,10 +6,10 @@ import traceback
 from types import TracebackType
 from typing import Any
 
-from mollog.context import get_context
-from mollog.handler import Handler
-from mollog.level import Level
-from mollog.record import LogRecord
+from mollog._context import Context
+from mollog._handler import Handler
+from mollog._level import Level
+from mollog._record import LogRecord
 
 ExcInfo = tuple[type[BaseException], BaseException, TracebackType | None]
 ExcInfoArg = bool | BaseException | ExcInfo | None
@@ -24,6 +24,7 @@ class Logger:
         level: Level = Level.TRACE,
         *,
         propagate: bool = True,
+        bound_extra: dict[str, Any] | None = None,
     ) -> None:
         self.name = name
         self.level = level
@@ -31,6 +32,7 @@ class Logger:
         self.handlers: list[Handler] = []
         self.parent: Logger | None = None
         self._lock = threading.RLock()
+        self._bound_extra: dict[str, Any] = dict(bound_extra) if bound_extra else {}
 
     def add_handler(self, handler: Handler) -> None:
         with self._lock:
@@ -52,6 +54,14 @@ class Logger:
     def is_enabled_for(self, level: Level) -> bool:
         return level >= self.level
 
+    def _merged_extra(self, call_extra: dict[str, Any] | None) -> dict[str, Any]:
+        merged = Context.get()
+        if self._bound_extra:
+            merged.update(self._bound_extra)
+        if call_extra:
+            merged.update(call_extra)
+        return merged
+
     def _log(
         self,
         level: Level,
@@ -63,14 +73,11 @@ class Logger:
     ) -> None:
         if not self.is_enabled_for(level):
             return
-        merged_extra = get_context()
-        if extra:
-            merged_extra.update(extra)
         record = LogRecord(
             level=level,
             message=message,
             logger_name=self.name,
-            extra=merged_extra,
+            extra=self._merged_extra(extra),
             exception=_format_exception(exc_info),
             stack_info=_format_stack_info() if stack_info else None,
         )
@@ -150,130 +157,48 @@ class Logger:
     def exception(self, message: str, **extra: Any) -> None:
         self._log(Level.ERROR, message, extra or None, exc_info=True)
 
-    def bind(self, **extra: Any) -> BoundLogger:
-        return BoundLogger(self, extra)
+    def fire(
+        self,
+        message: str,
+        *,
+        level: Level | str | int = Level.INFO,
+        **extra: Any,
+    ) -> None:
+        """Forward an event to logfire, bypassing mollog's Handler pipeline.
+
+        Requires :func:`mollog.configure_logfire` to have been called first.
+        Merges the current :class:`Context`, the logger's bound fields, and
+        *extra* (later sources win) and passes them as logfire attributes.
+        """
+
+        from mollog import _logfire
+
+        resolved = Level.coerce(level)
+        attributes = self._merged_extra(extra or None)
+        _logfire.fire(resolved, message, attributes, logger_name=self.name)
+
+    def bind(self, **extra: Any) -> Logger:
+        """Return a view of this logger with additional persistent fields.
+
+        The returned object is a :class:`Logger` that shares the underlying
+        handler list and hierarchy with ``self`` and carries ``**extra``
+        merged on top of any already-bound fields. It is not registered
+        with :class:`LoggerManager`.
+        """
+
+        merged = {**self._bound_extra, **extra}
+        view = Logger.__new__(Logger)
+        view.name = self.name
+        view.level = self.level
+        view.propagate = self.propagate
+        view.handlers = self.handlers
+        view.parent = self.parent
+        view._lock = self._lock
+        view._bound_extra = merged
+        return view
 
     def close(self) -> None:
         self.clear_handlers(close=True)
-
-
-class BoundLogger:
-    """Logger wrapper that merges pre-bound extra fields into every record."""
-
-    def __init__(self, logger: Logger, extra: dict[str, Any]) -> None:
-        self._logger = logger
-        self._extra = extra
-
-    @property
-    def name(self) -> str:
-        return self._logger.name
-
-    def _merge(self, extra: dict[str, Any] | None) -> dict[str, Any]:
-        if extra:
-            return {**self._extra, **extra}
-        return dict(self._extra)
-
-    def trace(
-        self,
-        message: str,
-        *,
-        exc_info: ExcInfoArg = None,
-        stack_info: bool = False,
-        **extra: Any,
-    ) -> None:
-        self._logger._log(
-            Level.TRACE,
-            message,
-            self._merge(extra or None),
-            exc_info=exc_info,
-            stack_info=stack_info,
-        )
-
-    def debug(
-        self,
-        message: str,
-        *,
-        exc_info: ExcInfoArg = None,
-        stack_info: bool = False,
-        **extra: Any,
-    ) -> None:
-        self._logger._log(
-            Level.DEBUG,
-            message,
-            self._merge(extra or None),
-            exc_info=exc_info,
-            stack_info=stack_info,
-        )
-
-    def info(
-        self,
-        message: str,
-        *,
-        exc_info: ExcInfoArg = None,
-        stack_info: bool = False,
-        **extra: Any,
-    ) -> None:
-        self._logger._log(
-            Level.INFO,
-            message,
-            self._merge(extra or None),
-            exc_info=exc_info,
-            stack_info=stack_info,
-        )
-
-    def warning(
-        self,
-        message: str,
-        *,
-        exc_info: ExcInfoArg = None,
-        stack_info: bool = False,
-        **extra: Any,
-    ) -> None:
-        self._logger._log(
-            Level.WARNING,
-            message,
-            self._merge(extra or None),
-            exc_info=exc_info,
-            stack_info=stack_info,
-        )
-
-    def error(
-        self,
-        message: str,
-        *,
-        exc_info: ExcInfoArg = None,
-        stack_info: bool = False,
-        **extra: Any,
-    ) -> None:
-        self._logger._log(
-            Level.ERROR,
-            message,
-            self._merge(extra or None),
-            exc_info=exc_info,
-            stack_info=stack_info,
-        )
-
-    def critical(
-        self,
-        message: str,
-        *,
-        exc_info: ExcInfoArg = None,
-        stack_info: bool = False,
-        **extra: Any,
-    ) -> None:
-        self._logger._log(
-            Level.CRITICAL,
-            message,
-            self._merge(extra or None),
-            exc_info=exc_info,
-            stack_info=stack_info,
-        )
-
-    def exception(self, message: str, **extra: Any) -> None:
-        self._logger._log(Level.ERROR, message, self._merge(extra or None), exc_info=True)
-
-    def bind(self, **extra: Any) -> BoundLogger:
-        return BoundLogger(self._logger, {**self._extra, **extra})
 
 
 def _format_exception(exc_info: ExcInfoArg) -> str | None:

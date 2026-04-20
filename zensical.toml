@@ -17,7 +17,8 @@ nav = [
     "configuration.md",
     "context.md",
     "behavior.md",
-    "rich.md"
+    "rich.md",
+    "logfire.md"
   ]},
   {"Reference" = [
     "api.md",

@@ -3,10 +3,10 @@ import threading
 from abc import ABC, abstractmethod
 from typing import IO
 
-from mollog.filter import Filter
-from mollog.formatter import Formatter, TextFormatter
-from mollog.level import Level
-from mollog.record import LogRecord
+from mollog._filter import Filter
+from mollog._formatter import Formatter, TextFormatter
+from mollog._level import Level
+from mollog._record import LogRecord
 
 
 class Handler(ABC):

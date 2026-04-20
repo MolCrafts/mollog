@@ -4,10 +4,10 @@ import queue as queue_mod
 
 import pytest
 
-from mollog.handler import StreamHandler
-from mollog.level import Level
-from mollog.queue import QueueHandler, QueueListener
-from mollog.record import LogRecord
+from mollog._handler import StreamHandler
+from mollog._level import Level
+from mollog._queue import QueueHandler, QueueListener
+from mollog._record import LogRecord
 
 
 def _rec(msg: str = "hi") -> LogRecord:
@@ -71,9 +71,9 @@ class TestQueueHandlerListener:
 
 def _worker(q: multiprocessing.Queue, n: int) -> None:  # type: ignore[type-arg]
     """Worker function for multiprocess test."""
-    from mollog.level import Level
-    from mollog.queue import QueueHandler
-    from mollog.record import LogRecord
+    from mollog._level import Level
+    from mollog._queue import QueueHandler
+    from mollog._record import LogRecord
 
     qh = QueueHandler(q)
     for i in range(n):
@@ -83,7 +83,7 @@ def _worker(q: multiprocessing.Queue, n: int) -> None:  # type: ignore[type-arg]
 
 class TestMultiprocess:
     def test_multiprocess_queue(self, tmp_path):
-        from mollog.file_handler import FileHandler
+        from mollog._file_handler import FileHandler
 
         q: multiprocessing.Queue[object] = multiprocessing.Queue()
         log_file = tmp_path / "mp.log"

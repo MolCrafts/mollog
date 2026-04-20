@@ -1,6 +1,6 @@
-from mollog.filter import Filter, LevelFilter
-from mollog.level import Level
-from mollog.record import LogRecord
+from mollog._filter import Filter, LevelFilter
+from mollog._level import Level
+from mollog._record import LogRecord
 
 
 def _rec(level: Level = Level.INFO) -> LogRecord:
