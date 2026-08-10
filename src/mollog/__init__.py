@@ -38,7 +38,10 @@ from mollog._stdlib_bridge import (
 from mollog._timer import Timer
 
 try:
-    __version__ = version("mollog")
+    # Distribution name, not the import name — the wheel is published as
+    # `molcrafts-mollog`, so looking up "mollog" always raised and pinned
+    # __version__ to the "0+unknown" fallback.
+    __version__ = version("molcrafts-mollog")
 except PackageNotFoundError:
     __version__ = "0+unknown"
 

@@ -20,7 +20,8 @@ The GitHub repository must also have an environment named `pypi`.
 ## Release Checklist
 
 1. Ensure `pyproject.toml` has the intended version.
-2. Update `CHANGELOG.md` with the release date and notable changes.
+2. Optionally refresh `docs/release-notes.md` for user-facing highlights
+   (full history is git log / tags — no `CHANGELOG.md`).
 3. Run the full test suite:
 
    ```bash
@@ -35,7 +36,8 @@ The GitHub repository must also have an environment named `pypi`.
    ```
 
 5. Wait for the `Release` GitHub Actions workflow to publish the artifacts to PyPI via trusted publishing.
-6. Publish a GitHub release for the tag and paste the `1.0.0` changelog entry into the release notes.
+6. Publish a GitHub release for the tag; draft notes from `git log` since the
+   previous tag (or from `docs/release-notes.md` if you keep highlights there).
 
 ## Documentation Release
 

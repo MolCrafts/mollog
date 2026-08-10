@@ -13,6 +13,7 @@ from __future__ import annotations
 import io
 import logging as stdlib_logging
 import re
+from importlib.metadata import version
 
 import pytest
 
@@ -418,6 +419,21 @@ class TestStdlibDropInSurface:
         child = mollog.getLogger("svc.api")
         assert child.handlers == []
         assert child.hasHandlers()  # inherits from root
+
+
+class TestVersion:
+    """`__version__` must report the installed distribution, not the fallback.
+
+    The import name (`mollog`) and the distribution name
+    (`molcrafts-mollog`) differ, so a lookup keyed on the import name
+    silently degrades to "0+unknown" on every real install.
+    """
+
+    def test_version_matches_installed_distribution(self) -> None:
+        assert mollog.__version__ == version("molcrafts-mollog")
+
+    def test_version_is_not_the_unknown_fallback(self) -> None:
+        assert mollog.__version__ != "0+unknown"
 
 
 def test_user_migration_scenario_works_without_importing_logging() -> None:

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "molcrafts-mollog"
-version = "1.2.2"
+version = "1.3.0"
 description = "Structured logging library for the molcrafts ecosystem"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -30,14 +30,15 @@ classifiers = [
 
 [project.urls]
 Homepage = "https://github.com/MolCrafts/mollog"
-Documentation = "https://github.com/MolCrafts/mollog/tree/master/docs"
+Documentation = "https://docs.molcrafts.org/mollog/"
 Repository = "https://github.com/MolCrafts/mollog"
 Issues = "https://github.com/MolCrafts/mollog/issues"
-Changelog = "https://github.com/MolCrafts/mollog/blob/master/CHANGELOG.md"
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0", "ruff>=0.11", "logfire>=3"]
-docs = ["zensical>=0.0.32"]
+dev = ["pytest>=8.0", "ruff>=0.11", "logfire>=3",
+  "tox>=4.23",
+]
+docs = ["zensical>=0.0.53", "molcrafts-zensical-theme>=0.2.5"]
 logfire = ["logfire>=3"]
 
 [tool.setuptools]
