@@ -1,6 +1,6 @@
 [project]
 site_name = "mollog"
-site_url = "https://github.com/MolCrafts/mollog/tree/master/docs"
+site_url = "https://docs.molcrafts.org/mollog/"
 site_description = "Zero-dependency structured logging for Python services, scripts, and background workers."
 site_author = "Roy Kid"
 copyright = "&copy; 2026 Roy Kid"
@@ -11,19 +11,17 @@ repo_name = "MolCrafts/mollog"
 edit_uri = "edit/master/docs/"
 extra_css = ["stylesheets/extra.css"]
 nav = [
-  {"Overview" = "index.md"},
-  {"Guide" = [
-    "getting-started.md",
-    "configuration.md",
-    "context.md",
-    "behavior.md",
-    "rich.md",
-    "logfire.md"
-  ]},
-  {"Reference" = [
-    "api.md",
-    "release-notes.md"
-  ]}
+  { "Home" = "index.md" },
+  { "Tutorials" = [
+    { "Getting Started" = "getting-started.md" },
+    { "Configuration" = "configuration.md" },
+    { "Context Propagation" = "context.md" },
+    { "Behavior" = "behavior.md" },
+    { "Rich Console" = "rich.md" },
+    { "Logfire" = "logfire.md" },
+  ] },
+  { "API Reference" = "api.md" },
+  { "Release Notes" = "release-notes.md" },
 ]
 
 [project.theme]

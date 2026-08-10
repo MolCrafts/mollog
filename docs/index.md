@@ -1,4 +1,35 @@
-# mollog
+---
+title: mollog
+description: Structured logging for Python with a stdlib-compatible API.
+hide:
+  - navigation
+  - toc
+hero:
+  kicker: mollog Manual
+  title: mollog
+  description: A structured logger you can drop in where <code>import logging</code> was. Keep the stdlib format strings and the third-party ecosystem that emits through <code>logging</code>, and gain structured fields, context propagation, JSON / Rich formatters, and an optional Logfire backend.
+  install:
+    label: Install
+    command: pip install molcrafts-mollog
+  badges:
+    - img: https://img.shields.io/pypi/v/molcrafts-mollog
+      href: https://pypi.org/project/molcrafts-mollog/
+      alt: PyPI version
+    - img: https://img.shields.io/badge/python-3.12%2B-blue.svg
+      href: https://pypi.org/project/molcrafts-mollog/
+      alt: Python 3.12+
+    - img: https://img.shields.io/badge/license-BSD--3--Clause-blue.svg
+      href: https://github.com/MolCrafts/mollog/blob/master/LICENSE
+      alt: License BSD-3-Clause
+  actions:
+    - label: Get started
+      href: getting-started/
+      style: primary
+    - label: Configuration
+      href: configuration/
+    - label: API reference
+      href: api/
+---
 
 Structured logging for Python with a stdlib-compatible API — projects can drop `import logging` entirely while keeping access to `%(asctime)s`-style format strings and the third-party library ecosystem that emits through stdlib.
 

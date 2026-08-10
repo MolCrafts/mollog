@@ -1,5 +1,83 @@
 # Release Notes
 
+## 1.3.0
+
+Release date: 2026-08-10
+
+### Added
+
+- **`Timer`** — a wall-clock timer for instrumenting code blocks, usable as a
+  context manager or explicitly:
+
+  ```python
+  with mollog.Timer("fetch"):          # logs "fetch took 0.123s" at INFO
+      do_work()
+
+  t = mollog.Timer("fetch", log=False).start()   # silent stopwatch
+  do_work()
+  t.stop()
+  print(t.elapsed)
+  ```
+
+  Accepts `log=` to suppress logging, `level=` to pick the log level, and
+  `logger_name=` to route elsewhere (default `"mollog.timer"`). `elapsed`
+  reads live while running; `running` reports whether the timer is active.
+
+### Fixed
+
+- **`mollog.__version__` reported `"0+unknown"` on every install.** The
+  distribution is published as `molcrafts-mollog`, but the metadata lookup
+  used the import name `mollog`, so it always raised `PackageNotFoundError`
+  and fell through to the placeholder. It now reports the real installed
+  version.
+
+### Changed
+
+- Documentation moved to [docs.molcrafts.org/mollog](https://docs.molcrafts.org/mollog/).
+  The `Documentation` project URL, the README links, and `site_url` now point
+  there instead of at the GitHub tree.
+- Docs toolchain pins raised to `zensical>=0.0.53` and
+  `molcrafts-zensical-theme>=0.2.5`.
+
+### Removed
+
+- `CHANGELOG.md`. Release history now lives in git tags / GitHub Releases,
+  with user-facing highlights on this page. The `Changelog` project URL and the
+  `MANIFEST.in` entry were dropped with it.
+
+### Breaking changes
+
+None. All additions are backward compatible.
+
+## 1.2.2
+
+Release date: 2026-05-11
+
+Completes the stdlib drop-in surface so `import mollog as logging` works.
+
+### Added
+
+- `mollog.basicConfig(**kwargs)` accepts stdlib's `filename`, `filemode`, `format`, `datefmt`, `style`, `level`, `stream`, `handlers`, `force`, `encoding`, `errors` kwargs with stdlib semantics (no-op when the root has handlers unless `force=True`; mutually exclusive `stream` / `filename` / `handlers`; only `%`-style format strings are accepted).
+- `mollog.getLogger(name=None)` returns the root logger when called with no argument or `None`, otherwise delegates to `get_logger`.
+- `Logger` gains `setLevel`, `addHandler`, `removeHandler`, `isEnabledFor` aliases for the existing snake_case methods, plus `hasHandlers()`, `getEffectiveLevel()`, and `getChild(suffix)` with stdlib semantics.
+- Level constants `NOTSET`, `WARN`, `FATAL` re-exported at the top level.
+
+### Changed
+
+- Top-level level constants (`DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`, …) are now the plain-`int` objects from stdlib `logging`, so `mollog.WARNING is logging.WARNING`. `TRACE` remains mollog's superset addition (still a plain `int`).
+
+### Breaking changes
+
+None. All additions are backward compatible.
+
+## 1.2.1
+
+Release date: 2026-05-10
+
+### Performance
+
+- Tightened hot paths in `_formatter.py`, `_manager.py`, and `_stdlib_bridge.py`: root-logger helpers no longer acquire a lock on every call once the manager has been configured, and stdlib records without user fields short-circuit to a shared empty dict. No public API or behavior changes.
+
 ## 1.2.0
 
 Release date: 2026-05-10

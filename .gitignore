@@ -180,3 +180,9 @@ pyrightconfig.json
 # are runtime-local (permission overrides, scheduler lock).
 .claude/settings.local.json
 .claude/scheduled_tasks.lock
+
+# Resolved by CI from pyproject.toml — see ci.yml `uv sync --extra dev`.
+uv.lock
+
+# macOS Finder metadata
+.DS_Store

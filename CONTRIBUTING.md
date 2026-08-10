@@ -34,7 +34,8 @@ zensical serve
 - Keep the runtime package dependency free.
 - Add tests for behavior changes and bug fixes.
 - Preserve backwards compatibility for public APIs unless the change is explicitly scheduled for a major release.
-- Update `README.md`, `docs/`, and `CHANGELOG.md` when behavior or public interfaces change.
+- Update `README.md` and `docs/` when behavior or public interfaces change.
+  Release history lives in git tags / GitHub Releases (no `CHANGELOG.md`).
 
 ## Pull Requests
 

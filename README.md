@@ -16,7 +16,7 @@
 </p>
 
 <p>
-  <a href="https://github.com/MolCrafts/mollog/tree/master/docs"><b>Documentation</b></a> &nbsp;&middot;&nbsp;
+  <a href="https://docs.molcrafts.org/mollog/"><b>Documentation</b></a> &nbsp;&middot;&nbsp;
   <a href="#quick-start"><b>Quick start</b></a> &nbsp;&middot;&nbsp;
   <a href="#molcrafts-ecosystem"><b>Ecosystem</b></a>
 </p>
@@ -71,15 +71,16 @@ mollog.info("service booted", port=8080)
 
 ## Documentation
 
-The full guide lives in [`docs/`](https://github.com/MolCrafts/mollog/tree/master/docs):
+The full guide: [docs.molcrafts.org/mollog](https://docs.molcrafts.org/mollog/)
+(sources in [`docs/`](docs/)):
 
-- [Getting started](https://github.com/MolCrafts/mollog/blob/master/docs/getting-started.md)
-- [Configuration](https://github.com/MolCrafts/mollog/blob/master/docs/configuration.md)
-- [Context](https://github.com/MolCrafts/mollog/blob/master/docs/context.md)
-- [Behavior](https://github.com/MolCrafts/mollog/blob/master/docs/behavior.md)
-- [Rich output](https://github.com/MolCrafts/mollog/blob/master/docs/rich.md)
-- [Logfire backend](https://github.com/MolCrafts/mollog/blob/master/docs/logfire.md)
-- [API reference](https://github.com/MolCrafts/mollog/blob/master/docs/api.md)
+- [Getting started](https://docs.molcrafts.org/mollog/getting-started/)
+- [Configuration](https://docs.molcrafts.org/mollog/configuration/)
+- [Context](https://docs.molcrafts.org/mollog/context/)
+- [Behavior](https://docs.molcrafts.org/mollog/behavior/)
+- [Rich output](https://docs.molcrafts.org/mollog/rich/)
+- [Logfire backend](https://docs.molcrafts.org/mollog/logfire/)
+- [API reference](https://docs.molcrafts.org/mollog/api/)
 
 ## MolCrafts ecosystem
 
