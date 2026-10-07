@@ -67,19 +67,15 @@ class RotatingFileHandler(Handler):
             self._path.unlink(missing_ok=True)
             self._file = open(self._path, "a", encoding="utf-8")  # noqa: SIM115
             return
-        # shift existing backups
+        # Shift existing backups up by one; .{backup_count} is overwritten, which
+        # drops the oldest. replace(), not rename(): rename() refuses an
+        # existing target on Windows.
         for i in range(self._backup_count - 1, 0, -1):
             src = self._path.with_suffix(f"{self._path.suffix}.{i}")
             dst = self._path.with_suffix(f"{self._path.suffix}.{i + 1}")
             if src.exists():
-                src.rename(dst)
-        # rename current to .1
-        dst = self._path.with_suffix(f"{self._path.suffix}.1")
-        self._path.rename(dst)
-        # delete overflow backup
-        overflow = self._path.with_suffix(f"{self._path.suffix}.{self._backup_count + 1}")
-        if overflow.exists():
-            overflow.unlink()
+                src.replace(dst)
+        self._path.replace(self._path.with_suffix(f"{self._path.suffix}.1"))
         self._file = open(self._path, "a", encoding="utf-8")  # noqa: SIM115
 
     def close(self) -> None:
@@ -134,7 +130,7 @@ class TimedRotatingFileHandler(Handler):
             return
         timestamp = time.strftime("%Y%m%d_%H%M%S")
         rotated = self._path.with_suffix(f"{self._path.suffix}.{timestamp}")
-        self._path.rename(rotated)
+        self._path.replace(rotated)
         self._file = open(self._path, "a", encoding="utf-8")  # noqa: SIM115
         self._next_rotation = time.monotonic() + self._interval_seconds
         self._cleanup_old_backups()

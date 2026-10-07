@@ -17,7 +17,7 @@ mol_project:
   science:
     required: false
   ci:
-    config: .github/workflows/ci.yml
+    config: .github/workflows/test.yml
     local: "ruff check . && ruff format --check . && ty check src/ && pytest tests/ -q"
   notes_path: .claude/notes/notes.md
   specs_path: .claude/specs/
