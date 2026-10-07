@@ -181,7 +181,7 @@ pyrightconfig.json
 .claude/settings.local.json
 .claude/scheduled_tasks.lock
 
-# Resolved by CI from pyproject.toml — see ci.yml `uv sync --extra dev`.
+# Resolved by CI from pyproject.toml — see test.yml `uv sync --extra dev`.
 uv.lock
 
 # macOS Finder metadata

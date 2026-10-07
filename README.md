@@ -8,7 +8,7 @@
 <p><strong>Structured logging for Python with a stdlib-compatible API — no <code>import logging</code> required.</strong></p>
 
 <p>
-  <a href="https://github.com/MolCrafts/mollog/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/MolCrafts/mollog/ci.yml?style=flat-square&logo=githubactions&logoColor=white&label=CI" alt="CI"></a>
+  <a href="https://github.com/MolCrafts/mollog/actions/workflows/test.yml"><img src="https://img.shields.io/github/actions/workflow/status/MolCrafts/mollog/test.yml?style=flat-square&logo=githubactions&logoColor=white&label=CI" alt="CI"></a>
   <a href="https://pypi.org/project/molcrafts-mollog/"><img src="https://img.shields.io/pypi/v/molcrafts-mollog?style=flat-square&logo=pypi&logoColor=white&label=PyPI" alt="PyPI"></a>
   <a href="https://pypi.org/project/molcrafts-mollog/"><img src="https://img.shields.io/pypi/pyversions/molcrafts-mollog?style=flat-square&logo=python&logoColor=white" alt="Python"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-BSD--3--Clause-18432B?style=flat-square" alt="License"></a>
