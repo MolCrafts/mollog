@@ -49,5 +49,3 @@ accent = "amber"
 repo = "fontawesome/brands/github"
 edit = "material/pencil"
 view = "material/eye"
-
-[project.markdown_extensions.attr_list]
