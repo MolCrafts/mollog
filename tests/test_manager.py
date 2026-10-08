@@ -8,6 +8,8 @@ from mollog import (
     JSONFormatter,
     Level,
     StreamHandler,
+    basicConfig,
+    capture,
     configure,
     get_logger,
     shutdown,
@@ -133,3 +135,27 @@ class TestConfigureAndShutdown:
         h = FileHandler(tmp_path / "x.log", level=Level.ERROR)
         assert h.level is Level.ERROR
         h.close()
+
+    def test_get_logger_does_not_install_a_handler(self, capsys):
+        logger = get_logger("app")
+        assert logger.handlers == []
+        assert LoggerManager().root.handlers == []
+        logger.info("fallback")
+        assert LoggerManager().root.handlers == []
+        assert "fallback" in capsys.readouterr().err
+
+    def test_basicConfig_after_get_logger_still_configures(self):
+        get_logger("app")
+        buf = io.StringIO()
+        basicConfig(level="INFO", stream=buf)
+        get_logger("app").info("configured")
+        assert "configured" in buf.getvalue()
+        shutdown()
+
+    def test_capture_collects_named_logger_records(self):
+        with capture("app") as records:
+            get_logger("app").info("kept", step=3)
+            get_logger("other").info("elsewhere")
+        assert [record.message for record in records] == ["kept"]
+        assert records[0].extra["step"] == 3
+        assert get_logger("app").handlers == []

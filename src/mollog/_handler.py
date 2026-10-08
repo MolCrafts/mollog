@@ -76,6 +76,20 @@ class StreamHandler(Handler):
         self._stream.flush()
 
 
+class CaptureHandler(Handler):
+    """Keep every record handed to this handler.
+
+    For tests. The records are stored as-is; nothing is formatted or written.
+    """
+
+    def __init__(self, level: Level = Level.TRACE) -> None:
+        super().__init__(level)
+        self.records: list[LogRecord] = []
+
+    def emit(self, record: LogRecord) -> None:
+        self.records.append(record)
+
+
 class NullHandler(Handler):
     """Discard all records."""
 

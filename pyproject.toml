@@ -68,3 +68,9 @@ src = ["src", "tests"]
 select = ["E", "F", "I", "PLW1514"]
 preview = true
 explicit-preview-rules = true
+
+# uv caches an editable build of this checkout by these keys. The default,
+# pyproject.toml alone, would keep handing a wheel from an older commit to
+# a partner that builds mollog from a checkout (molpy).
+[tool.uv]
+cache-keys = [{ file = "pyproject.toml" }, { git = { commit = true } }]
