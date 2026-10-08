@@ -1,5 +1,18 @@
 # Release Notes
 
+## 1.3.1
+
+Release date: 2026-10-08
+
+### Fixed
+
+- **Log rotation failed on Windows once a backup existed.** `FileHandler`
+  rotated with `rename()`, which Windows refuses when the target exists; it now
+  uses `replace()`, which overwrites on every platform.
+- **Docs code blocks rendered as plain text.** The docs config listed a single
+  markdown extension, which switched off zensical's defaults; the defaults are
+  back.
+
 ## 1.3.0
 
 Release date: 2026-08-10

@@ -31,8 +31,8 @@ The GitHub repository must also have an environment named `pypi`.
 4. Tag the release:
 
    ```bash
-   git tag v1.0.0
-   git push origin v1.0.0
+   git tag vX.Y.Z
+   git push origin vX.Y.Z
    ```
 
 5. Wait for the `release` workflow: it re-runs lint and the tests on the tag,
