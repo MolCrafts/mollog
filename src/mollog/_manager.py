@@ -2,16 +2,18 @@ from __future__ import annotations
 
 import sys
 import threading
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Iterator
+from contextlib import contextmanager
 from pathlib import Path
 from typing import IO, Any
 
 from mollog._context import Context
 from mollog._file_handler import FileHandler
 from mollog._formatter import Formatter, StdlibStyleFormatter, TextFormatter
-from mollog._handler import Handler, StreamHandler
+from mollog._handler import CaptureHandler, Handler, StreamHandler
 from mollog._level import Level
 from mollog._logger import ExcInfoArg, Logger
+from mollog._record import LogRecord
 from mollog._stdlib_bridge import capture_stdlib_logging, release_stdlib_logging
 
 
@@ -59,22 +61,6 @@ class LoggerManager:
                 logger.parent = self._root
 
             return logger
-
-    def ensure_default_handler(self) -> None:
-        """Add a default StreamHandler to root if it has none.
-
-        Hot path — every ``mollog.info(...)``-style call goes through here
-        via ``get_logger("")``. The fast path avoids the lock once the
-        manager has been configured.
-        """
-        if self._configured:
-            return
-        with self._state_lock:
-            if not self._configured and not self._root.handlers:
-                handler = StreamHandler(stream=sys.stderr, level=Level.INFO)
-                handler.set_formatter(TextFormatter())
-                self._root.add_handler(handler)
-                self._configured = True
 
     def configure(
         self,
@@ -208,12 +194,28 @@ class LoggerManager:
 def get_logger(name: str = "") -> Logger:
     """Get or create a logger by name.
 
-    On first call, attaches a default StreamHandler to the root logger
-    if no handlers are configured.
+    Does not attach a handler. A record that reaches the root logger
+    while it has no handlers is written to stderr, and that fallback is
+    not installed, so a later :func:`basicConfig` still takes effect.
     """
-    mgr = LoggerManager()
-    mgr.ensure_default_handler()
-    return mgr.get_logger(name)
+    return LoggerManager().get_logger(name)
+
+
+@contextmanager
+def capture(name: str = "") -> Iterator[list[LogRecord]]:
+    """Yield the records logger *name* emits inside the block.
+
+    The handler hangs on that logger only, and it is removed when the
+    block ends. Records are not formatted.
+    """
+
+    handler = CaptureHandler()
+    logger = get_logger(name)
+    logger.add_handler(handler)
+    try:
+        yield handler.records
+    finally:
+        logger.remove_handler(handler)
 
 
 def getLogger(name: str | None = None) -> Logger:

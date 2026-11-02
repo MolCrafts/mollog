@@ -7,9 +7,28 @@ from types import TracebackType
 from typing import Any
 
 from mollog._context import Context
+from mollog._formatter import TextFormatter
 from mollog._handler import Handler
 from mollog._level import Level
 from mollog._record import LogRecord
+
+
+class _LastResort(Handler):
+    """Write to the current ``sys.stderr``.
+
+    The stream is read at emit time. A handler built at import would keep
+    the original stderr, and a test capture (or a later redirect) would
+    miss it. This handler is not installed on the root logger.
+    """
+
+    def emit(self, record: LogRecord) -> None:
+        line = self._formatter.format(record)
+        sys.stderr.write(line + "\n")
+        sys.stderr.flush()
+
+
+_LAST_RESORT = _LastResort(level=Level.INFO)
+_LAST_RESORT.set_formatter(TextFormatter())
 
 ExcInfo = tuple[type[BaseException], BaseException, TracebackType | None]
 ExcInfoArg = bool | BaseException | ExcInfo | None
@@ -107,6 +126,10 @@ class Logger:
             handlers = tuple(self.handlers)
             parent = self.parent
             propagate = self.propagate
+
+        if not handlers and parent is None:
+            _LAST_RESORT.handle(record)
+            return
 
         for h in handlers:
             h.handle(record)

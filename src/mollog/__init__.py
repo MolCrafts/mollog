@@ -7,13 +7,14 @@ from mollog._context import Context
 from mollog._file_handler import FileHandler, RotatingFileHandler, TimedRotatingFileHandler
 from mollog._filter import Filter, LevelFilter
 from mollog._formatter import Formatter, JSONFormatter, StdlibStyleFormatter, TextFormatter
-from mollog._handler import Handler, NullHandler, StreamHandler
+from mollog._handler import CaptureHandler, Handler, NullHandler, StreamHandler
 from mollog._level import Level
 from mollog._logfire import LogfireHandler, configure_logfire
 from mollog._logger import Logger
 from mollog._manager import (
     LoggerManager,
     basicConfig,
+    capture,
     configure,
     critical,
     debug,
@@ -81,6 +82,7 @@ __all__ = [
     "StdlibStyleFormatter",
     "Filter",
     "LevelFilter",
+    "CaptureHandler",
     "Handler",
     "StreamHandler",
     "NullHandler",
@@ -95,6 +97,7 @@ __all__ = [
     "Logger",
     "LoggerManager",
     "basicConfig",
+    "capture",
     "configure",
     "configure_logfire",
     "getLogger",
